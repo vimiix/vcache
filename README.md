@@ -21,7 +21,7 @@ pip install vcache
 ### without redis
 
 ```python
->>> from vcache import Cache, Item,
+>>> from vcache import Cache, Item
 >>> value = "Hello, World, Hello 中国"
 >>> key = "key"
 >>> item = Item(key, value)
