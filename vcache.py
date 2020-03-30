@@ -7,7 +7,7 @@ from datetime import datetime
 from threading import RLock
 from cacheout import Cache as LocalCache
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 __author__ = "vimiix"
 
 LOCAL_CACHE_MAX_SIZE = 256

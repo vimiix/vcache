@@ -14,14 +14,6 @@ def read_file(filename):
     return long_description
 
 
-def read_requirements(filename):
-    return [
-        line.strip()
-        for line in read_file(filename).splitlines()
-        if not line.startswith("#")
-    ]
-
-
 setup(
     name="vcache",
     version=vcache.__version__,
@@ -32,7 +24,7 @@ setup(
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     scripts=["vcache.py"],
-    install_requires=read_requirements("req.txt"),
+    install_requires=["cacheout==0.11.2"],
     license="MIT",
     classifiers=[
         "Programming Language :: Python",

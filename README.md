@@ -1,4 +1,4 @@
-# cache-py
+# vcache
 
 阅读 [`go-redis/cache`](https://github.com/go-redis/cache) 的代码后，为了理解原代码，遂用Python 实现了一个版本。
 
