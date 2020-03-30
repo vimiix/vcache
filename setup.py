@@ -3,7 +3,6 @@
 
 from os import path as os_path
 from setuptools import setup
-import vcache
 
 this = os_path.abspath(os_path.dirname(__file__))
 
@@ -16,15 +15,15 @@ def read_file(filename):
 
 setup(
     name="vcache",
-    version=vcache.__version__,
-    author=vcache.__author__,
+    version="0.0.4",
+    author="vimiix",
     author_email="vimiix.py@gmail.com",
     url="https://github.com/vimiix/vcache",
     description="Python implementation of go-redis/cache",
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     scripts=["vcache.py"],
-    install_requires=["cacheout==0.11.2"],
+    install_requires=["cacheout"],
     license="MIT",
     classifiers=[
         "Programming Language :: Python",

@@ -7,9 +7,6 @@ from datetime import datetime
 from threading import RLock
 from cacheout import Cache as LocalCache
 
-__version__ = "0.0.3"
-__author__ = "vimiix"
-
 LOCAL_CACHE_MAX_SIZE = 256
 COMPRESSION_THRESHOLD = 64
 ONE_MINUTE = 60
@@ -345,15 +342,3 @@ def decode_time(b):
     return datetime.fromtimestamp(EPOCH + secs)
 
 
-if __name__ == "__main__":
-    s = "Hello, World"
-    key = "k"
-    opt = Option(stats_enabled=True)
-    item = Item(key, s)
-    cache = Cache(opt=opt)
-    print("local_cache_ttl:", cache.opt.local_cache_ttl)
-    cached = cache.set(item)
-    print("cached:", cached)
-    r = cache.get(key)
-    print("get result:", r)
-    print("cache info:", cache.stats())
