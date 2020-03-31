@@ -77,7 +77,7 @@ class Item:
     def __init__(
         self,
         key,
-        value=None,
+        value,
         ttl=ONE_HOUR,
         do_func=None,
         if_exists=False,
@@ -85,6 +85,8 @@ class Item:
         skip_local_cache=False,
     ):
         self.key = key
+        if value is None:
+            raise ValueError("cache:value is None")
         self._value = value
 
         # ttl is the cache expiration time.
@@ -103,7 +105,7 @@ class Item:
         # skip_local_cache skips local cache as if it is not set.
         self.skip_local_cache = skip_local_cache
 
-    def value(self):
+    def get_value(self):
         ret = None
         if self.do:
             ret = self.do(self)
@@ -111,13 +113,22 @@ class Item:
             ret = self._value
         return ret
 
-    @property
-    def ttl(self):
+    def set_value(self, v):
+        self._value = v
+
+    value = property(get_value, set_value)
+
+    def get_ttl(self):
         if self._ttl < 0:
             return 0
         elif self._ttl < 1:
             return ONE_HOUR
         return self._ttl
+
+    def set_ttl(self, ttl):
+        self._ttl = ttl
+
+    ttl = property(get_ttl, set_ttl)
 
 
 class Option:
@@ -146,10 +157,10 @@ class Cache:
         self._lock = RLock()
 
     def set(self, item):
-        if item.value() is None:
+        if item.value is None:
             raise ValueError("cache:value is None")
 
-        b = self.marshal(item.value())
+        b = self.marshal(item.value)
         if self.opt.local_cache is not None:
             self.local_set(item.key, b)
 
@@ -190,7 +201,7 @@ class Cache:
             return None
 
         try:
-            item._value = self.unmarshal(b)
+            item.value = self.unmarshal(b)
         except:
             if cached:
                 self.delete(item.key)
@@ -216,15 +227,11 @@ class Cache:
             return b, True
 
         def do_func():
-            try:
-                b = self._get_bytes(item.key, item.skip_local_cache)
+            b = self._get_bytes(item.key, item.skip_local_cache)
+            if b is not None:
                 return b, True
-            except:
-                try:
-                    b = self.set(item)
-                    return b, False
-                except:
-                    raise
+            b = self.set(item)
+            return b, False
 
         try:
             with self._lock:
@@ -251,6 +258,11 @@ class Cache:
                     self.misses += 1
             raise RedisIfaceError("cache: redis 'get' error. %s" % str(e))
 
+        if b is None:
+            with self._lock:
+                    self.misses += 1
+            return None
+
         if self.opt.stats_enabled:
             with self._lock:
                 self.hits += 1
@@ -260,6 +272,9 @@ class Cache:
         return b
 
     def marshal(self, value):
+        if value is None:
+            return None
+        
         value_type = type(value)
         if value_type is bytes:
             return value + BYTES_SUFFIX
@@ -276,7 +291,7 @@ class Cache:
         return b
 
     def unmarshal(self, b):
-        if len(b) == 0:
+        if b is None or len(b) == 0:
             return None
 
         type_suffix = b[-1:]

@@ -37,9 +37,18 @@ def test_set_item(cache):
     assert ok
 
 
+def test_set_item_none(cache):
+    key = "k"
+    with pytest.raises(ValueError) as e:
+        item = Item(key, None)
+    err_msg = e.value.args[0]
+    assert err_msg == "cache:value is None"
+
+
 def test_set_none(cache):
     key = "k"
-    item = Item(key, None)
+    item = Item(key, 'v')
+    item.value = None
     with pytest.raises(ValueError) as e:
         cache.set(item)
     err_msg = e.value.args[0]
@@ -154,13 +163,13 @@ def test_get_obj(cache):
 
 def test_get_by_wrong_key(cache):
     with pytest.raises(CacheMissError) as e:
-        cache.get("foo")
+        cache.get("k")
     err_msg = e.value.args[0]
     assert err_msg == "cache: key is missing"
 
 
 def test_get_by_skipping_local_cache(cache):
-    item = Item("foo", "bar")
+    item = Item("k", "v")
     cache.set(item)
     with pytest.raises(CacheMissError) as e:
         cache.get("foo", skip_local_cache=True)
@@ -172,15 +181,24 @@ def test_redis_interface_error(cache):
     bad_redis = RedisIface()
     opt = Option(redis=bad_redis, local_cache=None)
     cache.opt = opt
-    item = Item("foo", "bar")
+    item = Item("k", "v")
     with pytest.raises(NotImplementedError) as e:
         cache.set(item)
 
 
 def test_redis_local_cache_none_error(cache):
     cache.opt.local_cache = None
-    item = Item("foo", "bar")
+    item = Item("k", "v")
     with pytest.raises(RedisLocalCacheNoneError) as e:
         cache.set(item)
     err_msg = e.value.args[0]
     assert err_msg == "cache: both Redis and LocalCache are None"
+
+
+def test_cache_once(cache):
+    item1 = Item("k", "v1")
+    item2 = Item("k", "v2")
+    cache.set(item1)
+    cache.once(item2)
+    assert item2.value == "v1"
+

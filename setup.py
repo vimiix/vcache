@@ -15,7 +15,7 @@ def read_file(filename):
 
 setup(
     name="vcache",
-    version="0.0.6",
+    version="0.0.7",
     author="vimiix",
     author_email="vimiix.py@gmail.com",
     url="https://github.com/vimiix/vcache",
