@@ -1,8 +1,6 @@
 # vcache
 
-阅读 [`go-redis/cache`](https://github.com/go-redis/cache) 的代码后，为了理解原代码，遂用Python 实现了一个版本。
-
-*（py3.7 编写，其他版本未经测试）*
+ [`go-redis/cache`](https://github.com/go-redis/cache)  的 Python 实现
 
 ## Feature
 
